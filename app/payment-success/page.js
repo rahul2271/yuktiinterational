@@ -9,11 +9,13 @@ export default function PaymentSuccess() {
 
   useEffect(() => {
     const checkStatus = async () => {
-      const res = await fetch(`/api/verify-payment?order_id=${orderId}`);
-      const data = await res.json();
-      setStatus(data.status);
+      if (orderId) {
+        const res = await fetch(`/api/verify-payment?order_id=${orderId}`);
+        const data = await res.json();
+        setStatus(data.status);
+      }
     };
-    if (orderId) checkStatus();
+    checkStatus();
   }, [orderId]);
 
   return (
