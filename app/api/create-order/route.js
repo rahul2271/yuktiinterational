@@ -8,7 +8,7 @@ export async function POST(request) {
 
     console.log('Received Form Data:', body);
 
-    // ✅ Save to Google Sheet
+    // ✅ Save to Google Sheets
     try {
       await fetch(process.env.SHEET_API_URL, {
         method: 'POST',
@@ -28,7 +28,7 @@ export async function POST(request) {
       console.error('Google Sheet Save Error:', sheetError);
     }
 
-    // ✅ Generate valid customer_id
+    // ✅ Generate customer_id
     const customerId = (email || phone || 'cust')
       .replace(/[^a-zA-Z0-9_-]/g, '')
       .substring(0, 30) || `cust_${Date.now()}`;
@@ -66,30 +66,35 @@ export async function POST(request) {
       if (!cashfreeRes.ok) {
         console.error('Cashfree API Error:', cfData);
         return NextResponse.json(
-          {
-            error: 'Cashfree order creation failed',
-            cashfreeError: cfData
-          },
+          { error: 'Cashfree order creation failed', cashfreeError: cfData },
           { status: 500 }
         );
       }
-    } catch (cfError) {
-      console.error('Cashfree API Call Failed:', cfError);
+
+      // ✅ Defensive check for payment_link missing
+      if (cfData.payment_link) {
+        return NextResponse.json({ paymentLink: cfData.payment_link });
+      } else {
+        console.error('Cashfree Success Response Missing payment_link:', cfData);
+        return NextResponse.json(
+          { error: 'Cashfree did not return payment link', cashfreeResponse: cfData },
+          { status: 500 }
+        );
+      }
+
+    } catch (cashfreeError) {
+      console.error('Cashfree API Fetch Error:', cashfreeError);
       return NextResponse.json(
         {
           error: 'Failed to call Cashfree API',
-          details: cfError.message || JSON.stringify(cfError)
+          details: cashfreeError.message || JSON.stringify(cashfreeError)
         },
         { status: 500 }
       );
     }
 
-    // ✅ Success - Return payment link
-    return NextResponse.json({ paymentLink: cfData.payment_link });
-
   } catch (error) {
     console.error('Final API Error:', error);
-
     let errorDetails = '';
     try {
       errorDetails = typeof error === 'object' ? JSON.stringify(error) : String(error);
