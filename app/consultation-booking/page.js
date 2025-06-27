@@ -33,16 +33,22 @@ export default function ConsultationBooking() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
       });
+
       const data = await res.json();
-      if (data.paymentLink) {
+
+      if (res.ok && data.paymentLink) {
         window.location.href = data.paymentLink;
       } else {
-        console.error('Error:', data);
-        alert('Error creating payment. Check server logs.');
+        console.error('API Error:', data);
+        alert(
+          `Payment creation failed.\n\nReason: ${
+            data?.cashfreeError?.message || data?.error || 'Unknown Error'
+          }`
+        );
       }
     } catch (error) {
-      console.error('Submit Error:', error);
-      alert('Submit failed');
+      console.error('Network / Submit Error:', error);
+      alert('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -50,24 +56,54 @@ export default function ConsultationBooking() {
 
   return (
     <div style={{ padding: '20px' }}>
-      <h1>Yukti Herbs - International Consultation xBooking</h1>
+      <h1>Yukti Herbs - International Consultation Booking</h1>
       <form onSubmit={handleSubmit}>
-        <input placeholder="Name" required onChange={(e) => setForm({ ...form, name: e.target.value })} /><br />
-        <input placeholder="Email" required type="email" onChange={(e) => setForm({ ...form, email: e.target.value })} /><br />
-        <input placeholder="Country" required onChange={(e) => setForm({ ...form, country: e.target.value })} /><br />
-        <input placeholder="Phone" required onChange={(e) => setForm({ ...form, phone: e.target.value })} /><br />
+        <input
+          placeholder="Name"
+          required
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        /><br />
 
-        <select required onChange={handleDoctorChange}>
+        <input
+          placeholder="Email"
+          type="email"
+          required
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+        /><br />
+
+        <input
+          placeholder="Country"
+          required
+          value={form.country}
+          onChange={(e) => setForm({ ...form, country: e.target.value })}
+        /><br />
+
+        <input
+          placeholder="Phone"
+          required
+          value={form.phone}
+          onChange={(e) => setForm({ ...form, phone: e.target.value })}
+        /><br />
+
+        <select required value={form.doctor} onChange={handleDoctorChange}>
           <option value="">Select Doctor</option>
           <option value="Doctor1">Doctor 1 - $40</option>
           <option value="Doctor2">Doctor 2 - $30</option>
           <option value="Doctor3">Doctor 3 - $10</option>
         </select><br />
 
-        <textarea placeholder="Symptoms / Message" onChange={(e) => setForm({ ...form, message: e.target.value })}></textarea><br />
+        <textarea
+          placeholder="Symptoms / Message"
+          value={form.message}
+          onChange={(e) => setForm({ ...form, message: e.target.value })}
+        ></textarea><br />
 
-        <p>Total Amount: ${form.price}</p>
-        <button type="submit" disabled={loading}>{loading ? 'Processing...' : 'Book Consultation & Pay'}</button>
+        <p><strong>Total Amount:</strong> ${form.price}</p>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Processing...' : 'Book Consultation & Pay'}
+        </button>
       </form>
     </div>
   );
