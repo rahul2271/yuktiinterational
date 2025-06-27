@@ -1,8 +1,8 @@
 'use client';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 
-export default function PaymentSuccess() {
+function PaymentStatus() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('order_id');
   const [status, setStatus] = useState('Checking payment status...');
@@ -32,5 +32,13 @@ export default function PaymentSuccess() {
   );
 }
 
-// ✅ Tell Next.js: This page is dynamic, don't prerender at build time
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PaymentStatus />
+    </Suspense>
+  );
+}
+
+// ✅ Prevent Next.js from pre-rendering this page during build
 export const dynamic = 'force-dynamic';
