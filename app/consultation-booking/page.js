@@ -50,7 +50,7 @@ export default function ConsultationBooking() {
 
   return (
     <div style={{ padding: '20px' }}>
-      <h1>Yukti Herbs - International Consultation Booking</h1>
+      <h1>Yukti Herbs - International Consultation xBooking</h1>
       <form onSubmit={handleSubmit}>
         <input placeholder="Name" required onChange={(e) => setForm({ ...form, name: e.target.value })} /><br />
         <input placeholder="Email" required type="email" onChange={(e) => setForm({ ...form, email: e.target.value })} /><br />
