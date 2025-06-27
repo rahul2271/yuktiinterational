@@ -8,7 +8,7 @@ export async function POST(request) {
 
     console.log('Received Form Data:', body);
 
-    // ✅ Save to Google Sheets
+    // ✅ Save form data to Google Sheets
     try {
       await fetch(process.env.SHEET_API_URL, {
         method: 'POST',
@@ -28,7 +28,7 @@ export async function POST(request) {
       console.error('Google Sheet Save Error:', sheetError);
     }
 
-    // ✅ Generate a valid customer_id (no special characters)
+    // ✅ Generate valid customer_id
     const customerId = (email || phone || 'cust')
       .replace(/[^a-zA-Z0-9_-]/g, '')
       .substring(0, 30) || `cust_${Date.now()}`;
@@ -70,13 +70,16 @@ export async function POST(request) {
         );
       }
 
-      // ✅ Defensive: Check if payment_link exists
-      if (cfData.payment_link) {
-        return NextResponse.json({ paymentLink: cfData.payment_link });
+      // ✅ New: If order_id exists, create hosted payment URL
+      if (cfData.cf_order_id && cfData.order_id) {
+        const hostedLink = `https://payments.cashfree.com/orders/${cfData.order_id}`;
+        console.log('Redirecting user to:', hostedLink);
+
+        return NextResponse.json({ paymentLink: hostedLink });
       } else {
-        console.error('Cashfree Success Response Missing payment_link:', JSON.stringify(cfData, null, 2));
+        console.error('Cashfree created order but missing order_id:', cfData);
         return NextResponse.json(
-          { error: 'Cashfree did not return payment link', cashfreeResponse: cfData },
+          { error: 'Cashfree did not return order_id', cashfreeResponse: cfData },
           { status: 500 }
         );
       }
