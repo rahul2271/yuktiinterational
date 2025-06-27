@@ -28,7 +28,7 @@ export async function POST(request) {
       console.error('Google Sheet Save Error:', sheetError);
     }
 
-    // ✅ Generate customer_id
+    // ✅ Generate valid customer_id (alphanumeric only)
     const customerId = (email || phone || 'cust')
       .replace(/[^a-zA-Z0-9_-]/g, '')
       .substring(0, 30) || `cust_${Date.now()}`;
@@ -65,10 +65,10 @@ export async function POST(request) {
       });
 
       cfData = await cashfreeRes.json();
-      console.log('Cashfree Payment Link API Response:', JSON.stringify(cfData, null, 2));
+      console.log('Cashfree Payment Links API Response:', JSON.stringify(cfData, null, 2));
 
       if (!cashfreeRes.ok) {
-        console.error('Cashfree Payment Link API Error:', cashfreeRes.status, cfData);
+        console.error('Cashfree API HTTP Error:', cashfreeRes.status, cfData);
         return NextResponse.json(
           { error: 'Cashfree Payment Link API call failed', cashfreeError: cfData },
           { status: 500 }
@@ -76,7 +76,7 @@ export async function POST(request) {
       }
 
       if (cfData.payment_link_url) {
-        console.log('Payment Link:', cfData.payment_link_url);
+        console.log('Returning payment link:', cfData.payment_link_url);
         return NextResponse.json({ paymentLink: cfData.payment_link_url });
       } else {
         console.error('Cashfree did not return payment_link_url:', cfData);
@@ -89,7 +89,10 @@ export async function POST(request) {
     } catch (cashfreeError) {
       console.error('Cashfree API Fetch Exception:', cashfreeError);
       return NextResponse.json(
-        { error: 'Failed to call Cashfree API', details: cashfreeError.message || JSON.stringify(cashfreeError) },
+        {
+          error: 'Failed to call Cashfree API',
+          details: cashfreeError.message || JSON.stringify(cashfreeError)
+        },
         { status: 500 }
       );
     }
