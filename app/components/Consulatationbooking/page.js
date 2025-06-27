@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ConsultationBooking() {
   const [form, setForm] = useState({
@@ -9,53 +9,66 @@ export default function ConsultationBooking() {
     phone: '',
     doctor: '',
     message: '',
-    price: 0
+    price: 0,
   });
   const [loading, setLoading] = useState(false);
 
   const doctorPrices = {
     Doctor1: 40,
     Doctor2: 30,
-    Doctor3: 10
+    Doctor3: 10,
   };
+
+  // ✅ Load Cashfree JS SDK
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
 
   const handleDoctorChange = (e) => {
     const doctor = e.target.value;
-    setForm({ ...form, doctor, price: doctorPrices[doctor] });
+    setForm({ ...form, doctor, price: doctorPrices[doctor] || 0 });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       const res = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
+        body: JSON.stringify(form),
       });
 
-      let data = {};
-      try {
-        data = await res.json();
-      } catch (jsonError) {
-        console.error('Non-JSON response from API:', jsonError);
-        alert(`Server returned non-JSON response. Status: ${res.status}`);
-        return;
-      }
+      const data = await res.json();
 
-      if (res.ok && data.paymentLink) {
-        window.location.href = data.paymentLink;
+      if (res.ok && data.paymentSessionId) {
+        console.log('Received paymentSessionId:', data.paymentSessionId);
+
+        if (typeof window !== 'undefined' && window.Cashfree) {
+          const cashfree = Cashfree({ mode: 'production' });
+
+          cashfree.checkout({
+            paymentSessionId: data.paymentSessionId,
+            redirectTarget: '_self', // Change to '_blank' or '_modal' if needed
+          });
+        } else {
+          alert('Cashfree SDK not loaded');
+        }
       } else {
         console.error('API Error:', data);
         alert(
-          `Order creation failed.\n\nStatus: ${res.status}\nReason: ${
-            data?.cashfreeError?.message || data?.error || JSON.stringify(data) || 'Unknown server error'
-          }`
+          `Order creation failed.\n\nStatus: ${res.status}\nReason: ${JSON.stringify(
+            data
+          )}`
         );
       }
-    } catch (networkError) {
-      console.error('Frontend Fetch Error:', networkError);
-      alert('Submit failed: ' + networkError.message);
+    } catch (error) {
+      console.error('Form Submit Error:', error);
+      alert('Something went wrong! Please try again.');
     } finally {
       setLoading(false);
     }

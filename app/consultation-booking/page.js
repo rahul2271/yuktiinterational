@@ -1,105 +1,130 @@
-export const runtime = 'edge';
-import { NextResponse } from 'next/server';
+'use client';
+import { useState, useEffect } from 'react';
 
-export async function POST(request) {
-  try {
-    const body = await request.json();
-    const { name, email, country, phone, doctor, message, price } = body;
+export default function ConsultationBooking() {
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    country: '',
+    phone: '',
+    doctor: '',
+    message: '',
+    price: 0,
+  });
+  const [loading, setLoading] = useState(false);
 
-    console.log('Received Form Data:', body);
+  const doctorPrices = {
+    Doctor1: 40,
+    Doctor2: 30,
+    Doctor3: 10,
+  };
 
-    // ✅ Save form data to Google Sheet
+  // ✅ Load Cashfree JS SDK
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
+  const handleDoctorChange = (e) => {
+    const doctor = e.target.value;
+    setForm({ ...form, doctor, price: doctorPrices[doctor] || 0 });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
     try {
-      await fetch(process.env.SHEET_API_URL, {
+      const res = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          email,
-          country,
-          phone,
-          doctor,
-          message,
-          price,
-          status: 'pending'
-        })
-      });
-    } catch (sheetError) {
-      console.error('Google Sheet Save Error:', sheetError);
-    }
-
-    // ✅ Generate a valid customer_id (alphanumeric, underscore, hyphen only)
-    const customerId = (email || phone || 'cust')
-      .replace(/[^a-zA-Z0-9_-]/g, '')
-      .substring(0, 30) || `cust_${Date.now()}`;
-
-    let cfData;
-
-    try {
-      // ✅ Call Cashfree Order API
-      const cashfreeRes = await fetch('https://api.cashfree.com/pg/orders', {
-        method: 'POST',
-        headers: {
-          'x-client-id': process.env.CASHFREE_APP_ID,
-          'x-client-secret': process.env.CASHFREE_SECRET_KEY,
-          'x-api-version': '2022-09-01',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          order_amount: price,
-          order_currency: 'USD',
-          customer_details: {
-            customer_id: customerId,
-            customer_email: email,
-            customer_phone: phone,
-            customer_name: name
-          },
-          order_meta: {
-            return_url: `${process.env.SITE_URL}/payment-success?order_id={order_id}`
-          }
-        })
+        body: JSON.stringify(form),
       });
 
-      cfData = await cashfreeRes.json();
-      console.log('Cashfree API Response:', cfData);
+      const data = await res.json();
 
-      if (!cashfreeRes.ok) {
-        console.error('Cashfree API Error:', cfData);
-        return NextResponse.json(
-          { error: 'Cashfree order creation failed', cashfreeError: cfData },
-          { status: 500 }
+      if (res.ok && data.paymentSessionId) {
+        console.log('Received paymentSessionId:', data.paymentSessionId);
+
+        if (typeof window !== 'undefined' && window.Cashfree) {
+          const cashfree = Cashfree({ mode: 'production' });
+
+          cashfree.checkout({
+            paymentSessionId: data.paymentSessionId,
+            redirectTarget: '_self', // Change to '_blank' or '_modal' if needed
+          });
+        } else {
+          alert('Cashfree SDK not loaded');
+        }
+      } else {
+        console.error('API Error:', data);
+        alert(
+          `Order creation failed.\n\nStatus: ${res.status}\nReason: ${JSON.stringify(
+            data
+          )}`
         );
       }
-    } catch (cashfreeError) {
-      console.error('Cashfree API Call Failed:', cashfreeError);
-      return NextResponse.json(
-        {
-          error: 'Cashfree API request failed',
-          details: cashfreeError.message || JSON.stringify(cashfreeError)
-        },
-        { status: 500 }
-      );
+    } catch (error) {
+      console.error('Form Submit Error:', error);
+      alert('Something went wrong! Please try again.');
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // ✅ Success - Return payment link to frontend
-    return NextResponse.json({ paymentLink: cfData.payment_link });
+  return (
+    <div style={{ padding: '20px' }}>
+      <h1>Yukti Herbs - International Consultation Booking</h1>
+      <form onSubmit={handleSubmit}>
+        <input
+          placeholder="Name"
+          required
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        /><br />
 
-  } catch (error) {
-    console.error('Final API Error:', error);
+        <input
+          placeholder="Email"
+          type="email"
+          required
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+        /><br />
 
-    let errorDetails = '';
-    try {
-      errorDetails = typeof error === 'object' ? JSON.stringify(error) : String(error);
-    } catch (jsonError) {
-      errorDetails = 'Unknown error (JSON stringify failed)';
-    }
+        <input
+          placeholder="Country"
+          required
+          value={form.country}
+          onChange={(e) => setForm({ ...form, country: e.target.value })}
+        /><br />
 
-    return NextResponse.json(
-      {
-        error: 'Internal server error',
-        details: error.message || errorDetails || 'Unknown server error'
-      },
-      { status: 500 }
-    );
-  }
+        <input
+          placeholder="Phone"
+          required
+          value={form.phone}
+          onChange={(e) => setForm({ ...form, phone: e.target.value })}
+        /><br />
+
+        <select required value={form.doctor} onChange={handleDoctorChange}>
+          <option value="">Select Doctor</option>
+          <option value="Doctor1">Doctor 1 - $40</option>
+          <option value="Doctor2">Doctor 2 - $30</option>
+          <option value="Doctor3">Doctor 3 - $10</option>
+        </select><br />
+
+        <textarea
+          placeholder="Symptoms / Message"
+          value={form.message}
+          onChange={(e) => setForm({ ...form, message: e.target.value })}
+        ></textarea><br />
+
+        <p><strong>Total Amount:</strong> ${form.price}</p>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Processing...' : 'Book Consultation & Pay'}
+        </button>
+      </form>
+    </div>
+  );
 }
