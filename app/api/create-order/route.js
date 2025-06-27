@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import { NextResponse } from 'next/server';
 
 export async function POST(req) {
@@ -79,14 +80,13 @@ export async function POST(req) {
       );
     }
 
-    // ✅ Success - Return Payment Link
+    // ✅ Return Payment Link on Success
     return NextResponse.json({ paymentLink: cfData.payment_link });
 
   } catch (error) {
     console.error('API Error:', error);
 
     let errorDetails = '';
-
     try {
       errorDetails = typeof error === 'object' ? JSON.stringify(error) : String(error);
     } catch (jsonError) {
