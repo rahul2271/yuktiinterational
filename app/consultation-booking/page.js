@@ -41,14 +41,14 @@ export default function ConsultationBooking() {
       } else {
         console.error('API Error:', data);
         alert(
-          `Payment creation failed.\n\nReason: ${
+          `Order creation failed.\n\nReason: ${
             data?.cashfreeError?.message || data?.error || 'Unknown Error'
           }`
         );
       }
     } catch (error) {
-      console.error('Network / Submit Error:', error);
-      alert('Something went wrong. Please try again.');
+      console.error('Submit Error:', error);
+      alert('Submit failed: ' + (error.message || JSON.stringify(error)));
     } finally {
       setLoading(false);
     }
