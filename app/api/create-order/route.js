@@ -28,7 +28,7 @@ export async function POST(request) {
       console.error('Google Sheet Save Error:', sheetError);
     }
 
-    // ✅ Generate customer_id
+    // ✅ Generate a valid customer_id (no special characters)
     const customerId = (email || phone || 'cust')
       .replace(/[^a-zA-Z0-9_-]/g, '')
       .substring(0, 30) || `cust_${Date.now()}`;
@@ -36,7 +36,6 @@ export async function POST(request) {
     let cfData;
 
     try {
-      // ✅ Call Cashfree API
       const cashfreeRes = await fetch('https://api.cashfree.com/pg/orders', {
         method: 'POST',
         headers: {
@@ -61,21 +60,21 @@ export async function POST(request) {
       });
 
       cfData = await cashfreeRes.json();
-      console.log('Cashfree API Response:', cfData);
+      console.log('Full Cashfree API Response:', JSON.stringify(cfData, null, 2));
 
       if (!cashfreeRes.ok) {
-        console.error('Cashfree API Error:', cfData);
+        console.error('Cashfree API HTTP Error:', cashfreeRes.status, cfData);
         return NextResponse.json(
           { error: 'Cashfree order creation failed', cashfreeError: cfData },
           { status: 500 }
         );
       }
 
-      // ✅ Defensive check for payment_link missing
+      // ✅ Defensive: Check if payment_link exists
       if (cfData.payment_link) {
         return NextResponse.json({ paymentLink: cfData.payment_link });
       } else {
-        console.error('Cashfree Success Response Missing payment_link:', cfData);
+        console.error('Cashfree Success Response Missing payment_link:', JSON.stringify(cfData, null, 2));
         return NextResponse.json(
           { error: 'Cashfree did not return payment link', cashfreeResponse: cfData },
           { status: 500 }
@@ -83,7 +82,7 @@ export async function POST(request) {
       }
 
     } catch (cashfreeError) {
-      console.error('Cashfree API Fetch Error:', cashfreeError);
+      console.error('Cashfree API Fetch Exception:', cashfreeError);
       return NextResponse.json(
         {
           error: 'Failed to call Cashfree API',
@@ -95,6 +94,7 @@ export async function POST(request) {
 
   } catch (error) {
     console.error('Final API Error:', error);
+
     let errorDetails = '';
     try {
       errorDetails = typeof error === 'object' ? JSON.stringify(error) : String(error);
