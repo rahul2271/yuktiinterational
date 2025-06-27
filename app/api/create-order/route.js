@@ -24,8 +24,13 @@ export async function POST(req) {
         })
       });
     } catch (sheetError) {
-      console.error('Sheet Save Error:', sheetError);
+      console.error('Google Sheet Save Error:', sheetError);
     }
+
+    // ✅ Generate a valid customer_id (alphanumeric, underscore, hyphen only)
+    const customerId = (email || phone || 'cust')
+      .replace(/[^a-zA-Z0-9_-]/g, '')               // ✅ Remove special characters
+      .substring(0, 30) || `cust_${Date.now()}`;     // ✅ Prevent empty string
 
     // ✅ Create Cashfree Order
     const cashfreeResponse = await fetch('https://api.cashfree.com/pg/orders', {
@@ -33,12 +38,14 @@ export async function POST(req) {
       headers: {
         'x-client-id': process.env.CASHFREE_APP_ID,
         'x-client-secret': process.env.CASHFREE_SECRET_KEY,
+        'x-api-version': '2022-09-01',               // ✅ Required API version
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         order_amount: price,
         order_currency: 'USD',
         customer_details: {
+          customer_id: customerId,
           customer_email: email,
           customer_phone: phone,
           customer_name: name
@@ -59,6 +66,7 @@ export async function POST(req) {
       );
     }
 
+    // ✅ Return Payment Link to Frontend
     return NextResponse.json({ paymentLink: cfData.payment_link });
 
   } catch (error) {
