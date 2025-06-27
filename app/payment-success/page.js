@@ -10,19 +10,27 @@ export default function PaymentSuccess() {
   useEffect(() => {
     const checkStatus = async () => {
       if (orderId) {
-        const res = await fetch(`/api/verify-payment?order_id=${orderId}`);
-        const data = await res.json();
-        setStatus(data.status);
+        try {
+          const res = await fetch(`/api/verify-payment?order_id=${orderId}`);
+          const data = await res.json();
+          setStatus(data.status);
+        } catch (error) {
+          console.error('Error checking payment status:', error);
+          setStatus('Error fetching payment status');
+        }
       }
     };
     checkStatus();
   }, [orderId]);
 
   return (
-    <div>
+    <div style={{ padding: '20px' }}>
       <h1>Payment Success</h1>
-      <p>Order ID: {orderId}</p>
-      <p>Status: {status}</p>
+      <p><strong>Order ID:</strong> {orderId}</p>
+      <p><strong>Status:</strong> {status}</p>
     </div>
   );
 }
+
+// ✅ Tell Next.js: This page is dynamic, don't prerender at build time
+export const dynamic = 'force-dynamic';
