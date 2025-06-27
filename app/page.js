@@ -1,5 +1,5 @@
 import Image from "next/image";
-import ConsultationBooking from "./consultation-booking/page";
+import ConsultationBooking from "./components/Consulatationbooking/page";
 
 export default function Home() {
   return (
