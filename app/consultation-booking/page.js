@@ -34,21 +34,28 @@ export default function ConsultationBooking() {
         body: JSON.stringify(form)
       });
 
-      const data = await res.json();
+      let data = {};
+      try {
+        data = await res.json();
+      } catch (jsonError) {
+        console.error('Non-JSON response from API:', jsonError);
+        alert('Server returned non-JSON response. Please check server logs.');
+        return;
+      }
 
       if (res.ok && data.paymentLink) {
         window.location.href = data.paymentLink;
       } else {
         console.error('API Error:', data);
         alert(
-          `Order creation failed.\n\nReason: ${
-            data?.cashfreeError?.message || data?.error || 'Unknown Error'
+          `Order creation failed:\n\n${
+            data?.cashfreeError?.message || data?.error || 'Unknown server error'
           }`
         );
       }
     } catch (error) {
-      console.error('Submit Error:', error);
-      alert('Submit failed: ' + (error.message || JSON.stringify(error)));
+      console.error('Frontend Fetch Error:', error);
+      alert('Submit failed: ' + error.message);
     } finally {
       setLoading(false);
     }
