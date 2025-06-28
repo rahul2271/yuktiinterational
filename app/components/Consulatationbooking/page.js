@@ -171,13 +171,13 @@ export default function ConsultationBooking() {
 
         <p className="text-lg font-semibold">Total Amount: ${form.price}</p>
 
-        {/* <button
+        <button
           type="submit"
           className="w-full bg-yellow-500 text-white py-3 rounded text-lg hover:bg-yellow-600"
           
         >
           {'Book Consultation & Pay'}
-        </button> */}
+        </button> 
       </form>
     </div>
   );
