@@ -72,62 +72,70 @@ export default function ConsultationBooking() {
   };
 
   return (
-    <div className="bg-gradient-to-r from-[#1a2d5a] via-[#152e50] to-[#0c0f1a] text-white min-h-screen font-poppins px-4 py-8">
-      <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-8">
-        {/* Left Panel */}
-        <div className="space-y-6">
-          <h1 className="text-4xl md:text-5xl font-bold">Tired of just managing symptoms?</h1>
-          <p className="text-gray-300">Many patients came to us after trying everything. Our Ayurvedic approach focuses on <em>you</em>—not just the disease—for root-cause healing.</p>
+    <div className="bg-gradient-to-br from-[#0c0f1a] via-[#152e50] to-[#1a2d5a] text-white min-h-screen font-sans">
 
-          <div>
-            <h3 className="text-xl font-semibold">Meet <span className="text-yellow-400">Dr. Suhas Sakhare (MD, PhD Ayurveda)</span></h3>
-            <p className="text-gray-400">15+ years experience • 8000+ patients globally</p>
+      {/* Header */}
+      <header className="bg-[#0c0f1a] py-4 shadow-md text-center">
+        <h1 className="text-3xl font-bold text-yellow-400">Yukti Herbs - Global Consultation</h1>
+        <p className="text-gray-400 text-sm">Natural Healing for International Patients</p>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-6 py-10">
+        {/* Left Intro Panel */}
+        <section className="mb-12">
+          <h2 className="text-4xl font-bold mb-4">Root-Cause Healing Awaits</h2>
+          <p className="text-gray-300 mb-6">
+            Over 8,000 patients globally trust Yukti Herbs for personalized Ayurvedic care.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="p-4 rounded-lg bg-white/10 shadow border border-yellow-300">
+              ✅ 1-on-1 Consultation (Video or Phone)
+            </div>
+            <div className="p-4 rounded-lg bg-white/10 shadow border border-yellow-300">
+              ✅ Diagnosis based on your Prakriti
+            </div>
+            <div className="p-4 rounded-lg bg-white/10 shadow border border-yellow-300">
+              ✅ Herbal + Lifestyle Plan
+            </div>
+            <div className="p-4 rounded-lg bg-white/10 shadow border border-yellow-300">
+              ✅ USD International Payments Supported
+            </div>
           </div>
+        </section>
 
-          <ul className="text-sm space-y-1 text-gray-400">
-            <li>✅ 1-on-1 Consultation (Call / Video)</li>
-            <li>✅ Personalized Ayurvedic Diagnosis</li>
-            <li>✅ Herbal treatment plan + lifestyle support</li>
-            <li>✅ Global patient care (USD Payments)</li>
-          </ul>
-
-          <div className="bg-white/10 border border-yellow-400 p-4 rounded-lg w-64 text-center">
-            <p className="text-lg">💰 Consultation Fee:</p>
-            <p className="text-yellow-300 text-2xl">${form.price}</p>
-          </div>
-        </div>
-
-        {/* Right Panel (Form) */}
-        <form onSubmit={handleSubmit} className="glass p-6 rounded-xl space-y-4 shadow-lg bg-white/10">
-          {/* Doctor & Name */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <select required value={form.doctor} onChange={handleDoctorChange} className="bg-white text-black rounded p-2 text-sm">
+        {/* Booking Form */}
+        <form onSubmit={handleSubmit} className="bg-white/10 p-8 rounded-2xl shadow-lg space-y-6">
+          {/* Doctor + Name */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <select required value={form.doctor} onChange={handleDoctorChange} className="p-3 rounded bg-white text-black text-sm">
               <option value="">Select Doctor</option>
               {Object.keys(doctorPrices).map((doc) => (
                 <option key={doc}>{doc}</option>
               ))}
             </select>
-            <input type="text" required placeholder="Full Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-white text-black rounded p-2 text-sm" />
+            <input type="text" required placeholder="Full Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="p-3 rounded bg-white text-black text-sm" />
           </div>
 
           {/* Gender / Email / Phone */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <select required value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className="bg-white text-black rounded p-2 text-sm">
+          <div className="grid md:grid-cols-3 gap-4">
+            <select required value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className="p-3 rounded bg-white text-black text-sm">
               <option value="">Gender</option>
               <option>Male</option>
               <option>Female</option>
             </select>
-            <input type="email" required placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="bg-white text-black rounded p-2 text-sm" />
-            <input type="tel" required placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="bg-white text-black rounded p-2 text-sm" />
+            <input type="email" required placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="p-3 rounded bg-white text-black text-sm" />
+            <input type="tel" required placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="p-3 rounded bg-white text-black text-sm" />
           </div>
 
-          {/* Country & City */}
-          <input type="text" required placeholder="Country" value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} className="bg-white text-black rounded p-2 text-sm w-full" />
-          <input type="text" required placeholder="City" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="bg-white text-black rounded p-2 text-sm w-full" />
+          {/* Country / City */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <input type="text" required placeholder="Country" value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} className="p-3 rounded bg-white text-black text-sm" />
+            <input type="text" required placeholder="City" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="p-3 rounded bg-white text-black text-sm" />
+          </div>
 
           {/* Health Concern */}
-          <select required value={form.healthConcern} onChange={(e) => setForm({ ...form, healthConcern: e.target.value })} className="bg-white text-black rounded p-2 text-sm w-full">
-            <option value="">Health Concern</option>
+          <select required value={form.healthConcern} onChange={(e) => setForm({ ...form, healthConcern: e.target.value })} className="p-3 rounded bg-white text-black text-sm w-full">
+            <option value="">Select Health Concern</option>
             <option>IBS</option>
             <option>IBD</option>
             <option>Ulcerative Colitis</option>
@@ -137,28 +145,36 @@ export default function ConsultationBooking() {
           </select>
 
           {/* Symptoms */}
-          <textarea rows="3" required placeholder="Briefly describe your symptoms" value={form.symptoms} onChange={(e) => setForm({ ...form, symptoms: e.target.value })} className="bg-white text-black rounded p-2 text-sm w-full"></textarea>
+          <textarea rows="3" required placeholder="Briefly describe your symptoms" value={form.symptoms} onChange={(e) => setForm({ ...form, symptoms: e.target.value })} className="p-3 rounded bg-white text-black text-sm w-full"></textarea>
 
           {/* Date & Time */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input type="date" required value={form.preferredDate} onChange={(e) => setForm({ ...form, preferredDate: e.target.value })} className="bg-white text-black rounded p-2 text-sm" />
-            <input type="time" required value={form.preferredTime} onChange={(e) => setForm({ ...form, preferredTime: e.target.value })} className="bg-white text-black rounded p-2 text-sm" />
+          <div className="grid md:grid-cols-2 gap-4">
+            <input type="date" required value={form.preferredDate} onChange={(e) => setForm({ ...form, preferredDate: e.target.value })} className="p-3 rounded bg-white text-black text-sm" />
+            <input type="time" required value={form.preferredTime} onChange={(e) => setForm({ ...form, preferredTime: e.target.value })} className="p-3 rounded bg-white text-black text-sm" />
           </div>
 
-          {/* Submit */}
-          <button type="submit" disabled={loading} className="w-full bg-yellow-400 hover:bg-yellow-500 text-black py-3 rounded text-lg font-semibold transition">
-            {loading ? 'Processing...' : `Book Appointment & Pay $${form.price}`}
+          {/* Total Amount */}
+          <div className="text-lg font-semibold text-yellow-300">Total: ${form.price}</div>
+
+          {/* Submit Button */}
+          <button disabled={loading} type="submit" className="bg-yellow-400 hover:bg-yellow-500 text-black py-3 w-full rounded-lg font-semibold text-lg transition-all">
+            {loading ? 'Processing...' : `Pay $${form.price} & Book`}
           </button>
 
           {/* Payment Icons */}
-          <div className="flex justify-center gap-4 mt-6 text-white text-2xl">
+          <div className="flex justify-center gap-6 text-white text-3xl mt-6">
             <i className="fab fa-cc-visa"></i>
             <i className="fab fa-cc-mastercard"></i>
             <i className="fab fa-google-pay"></i>
             <i className="fab fa-paypal"></i>
           </div>
         </form>
-      </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-[#0c0f1a] text-center text-gray-500 py-4 mt-10 text-sm border-t border-gray-700">
+        © 2025 Yukti Herbs. All rights reserved. | Ayurvedic Healing for the World.
+      </footer>
     </div>
   );
 }
