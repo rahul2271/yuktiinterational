@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 
 export default function ConsultationBooking() {
@@ -9,18 +8,22 @@ export default function ConsultationBooking() {
     gender: '',
     email: '',
     phone: '',
+    country: '',
     city: '',
     healthConcern: '',
-    message: '',
-    date: '',
-    timeSlot: '',
+    symptoms: '',
+    preferredDate: '',
+    preferredTime: '',
     price: 0,
   });
 
+  const [loading, setLoading] = useState(false);
+
   const doctorPrices = {
-    Doctor1: 40,
-    Doctor2: 30,
-    Doctor3: 10,
+    'Dr. Suhas Sakhare': 50,
+    'Dr. Manpreet Singh': 30,
+    'Dr. Sandeep Singh': 30,
+    'Dr. Yashasvi Chandel': 30,
   };
 
   useEffect(() => {
@@ -31,13 +34,17 @@ export default function ConsultationBooking() {
   }, []);
 
   const handleDoctorChange = (e) => {
-    const doctor = e.target.value;
-    setForm({ ...form, doctor, price: doctorPrices[doctor] || 0 });
+    const selectedDoctor = e.target.value;
+    setForm({
+      ...form,
+      doctor: selectedDoctor,
+      price: doctorPrices[selectedDoctor] || 0,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
     try {
       const res = await fetch('/api/create-order', {
         method: 'POST',
@@ -54,131 +61,104 @@ export default function ConsultationBooking() {
           redirectTarget: '_self',
         });
       } else {
-        alert(`Order creation failed: ${JSON.stringify(data)}`);
+        alert('Payment failed: ' + (data.error || JSON.stringify(data)));
       }
-    } catch (error) {
-      console.error('Submit Error:', error);
+    } catch (err) {
+      console.error('Submit error:', err);
       alert('Something went wrong!');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
-      <h1 className="text-3xl font-bold mb-6 text-center text-blue-800">Book Your Paid Consultation Now!</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <select
-            className="border border-gray-300 p-2 rounded"
-            value={form.doctor}
-            onChange={handleDoctorChange}
-            required
-          >
-            <option value="">Select Doctor</option>
-            <option value="Doctor1">Doctor 1 - $40</option>
-            <option value="Doctor2">Doctor 2 - $30</option>
-            <option value="Doctor3">Doctor 3 - $10</option>
-          </select>
+    <div className="bg-gradient-to-r from-[#1a2d5a] via-[#152e50] to-[#0c0f1a] text-white min-h-screen font-poppins px-4 py-8">
+      <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-8">
+        {/* Left Panel */}
+        <div className="space-y-6">
+          <h1 className="text-4xl md:text-5xl font-bold">Tired of just managing symptoms?</h1>
+          <p className="text-gray-300">Many patients came to us after trying everything. Our Ayurvedic approach focuses on <em>you</em>—not just the disease—for root-cause healing.</p>
 
-          <input
-            type="text"
-            placeholder="Full Name"
-            className="border border-gray-300 p-2 rounded"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            required
-          />
+          <div>
+            <h3 className="text-xl font-semibold">Meet <span className="text-yellow-400">Dr. Suhas Sakhare (MD, PhD Ayurveda)</span></h3>
+            <p className="text-gray-400">15+ years experience • 8000+ patients globally</p>
+          </div>
 
-          <select
-            className="border border-gray-300 p-2 rounded"
-            value={form.gender}
-            onChange={(e) => setForm({ ...form, gender: e.target.value })}
-            required
-          >
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-          </select>
+          <ul className="text-sm space-y-1 text-gray-400">
+            <li>✅ 1-on-1 Consultation (Call / Video)</li>
+            <li>✅ Personalized Ayurvedic Diagnosis</li>
+            <li>✅ Herbal treatment plan + lifestyle support</li>
+            <li>✅ Global patient care (USD Payments)</li>
+          </ul>
 
-          <input
-            type="email"
-            placeholder="Email"
-            className="border border-gray-300 p-2 rounded"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            required
-          />
-
-          <input
-            type="text"
-            placeholder="Phone Number"
-            className="border border-gray-300 p-2 rounded"
-            value={form.phone}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            required
-          />
-
-          <input
-            type="text"
-            placeholder="City"
-            className="border border-gray-300 p-2 rounded"
-            value={form.city}
-            onChange={(e) => setForm({ ...form, city: e.target.value })}
-            required
-          />
-
-          <select
-            className="border border-gray-300 p-2 rounded"
-            value={form.healthConcern}
-            onChange={(e) => setForm({ ...form, healthConcern: e.target.value })}
-            required
-          >
-            <option value="">Select Health Concern</option>
-            <option value="Hairfall">Hairfall</option>
-            <option value="PCOS">PCOS</option>
-            <option value="Diabetes">Diabetes</option>
-            <option value="Other">Other</option>
-          </select>
-
-          <input
-            type="date"
-            className="border border-gray-300 p-2 rounded"
-            value={form.date}
-            onChange={(e) => setForm({ ...form, date: e.target.value })}
-            required
-          />
-
-          <select
-            className="border border-gray-300 p-2 rounded"
-            value={form.timeSlot}
-            onChange={(e) => setForm({ ...form, timeSlot: e.target.value })}
-            required
-          >
-            <option value="">Select Time Slot</option>
-            <option value="10 AM - 12 PM">10 AM - 12 PM</option>
-            <option value="2 PM - 4 PM">2 PM - 4 PM</option>
-            <option value="6 PM - 8 PM">6 PM - 8 PM</option>
-          </select>
+          <div className="bg-white/10 border border-yellow-400 p-4 rounded-lg w-64 text-center">
+            <p className="text-lg">💰 Consultation Fee:</p>
+            <p className="text-yellow-300 text-2xl">${form.price}</p>
+          </div>
         </div>
 
-        <textarea
-          placeholder="Share your symptoms"
-          className="border border-gray-300 p-2 rounded w-full"
-          value={form.message}
-          onChange={(e) => setForm({ ...form, message: e.target.value })}
-          rows={4}
-        ></textarea>
+        {/* Right Panel (Form) */}
+        <form onSubmit={handleSubmit} className="glass p-6 rounded-xl space-y-4 shadow-lg bg-white/10">
+          {/* Doctor & Name */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <select required value={form.doctor} onChange={handleDoctorChange} className="bg-white text-black rounded p-2 text-sm">
+              <option value="">Select Doctor</option>
+              {Object.keys(doctorPrices).map((doc) => (
+                <option key={doc}>{doc}</option>
+              ))}
+            </select>
+            <input type="text" required placeholder="Full Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-white text-black rounded p-2 text-sm" />
+          </div>
 
-        <p className="text-lg font-semibold">Total Amount: ${form.price}</p>
+          {/* Gender / Email / Phone */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <select required value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} className="bg-white text-black rounded p-2 text-sm">
+              <option value="">Gender</option>
+              <option>Male</option>
+              <option>Female</option>
+            </select>
+            <input type="email" required placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="bg-white text-black rounded p-2 text-sm" />
+            <input type="tel" required placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="bg-white text-black rounded p-2 text-sm" />
+          </div>
 
-        <button
-          type="submit"
-          className="w-full bg-yellow-500 text-white py-3 rounded text-lg hover:bg-yellow-600"
-          
-        >
-          {'Book Consultation & Pay'}
-        </button> 
-      </form>
+          {/* Country & City */}
+          <input type="text" required placeholder="Country" value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} className="bg-white text-black rounded p-2 text-sm w-full" />
+          <input type="text" required placeholder="City" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="bg-white text-black rounded p-2 text-sm w-full" />
+
+          {/* Health Concern */}
+          <select required value={form.healthConcern} onChange={(e) => setForm({ ...form, healthConcern: e.target.value })} className="bg-white text-black rounded p-2 text-sm w-full">
+            <option value="">Health Concern</option>
+            <option>IBS</option>
+            <option>IBD</option>
+            <option>Ulcerative Colitis</option>
+            <option>Autoimmune Disorders</option>
+            <option>Infertility</option>
+            <option>Other</option>
+          </select>
+
+          {/* Symptoms */}
+          <textarea rows="3" required placeholder="Briefly describe your symptoms" value={form.symptoms} onChange={(e) => setForm({ ...form, symptoms: e.target.value })} className="bg-white text-black rounded p-2 text-sm w-full"></textarea>
+
+          {/* Date & Time */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input type="date" required value={form.preferredDate} onChange={(e) => setForm({ ...form, preferredDate: e.target.value })} className="bg-white text-black rounded p-2 text-sm" />
+            <input type="time" required value={form.preferredTime} onChange={(e) => setForm({ ...form, preferredTime: e.target.value })} className="bg-white text-black rounded p-2 text-sm" />
+          </div>
+
+          {/* Submit */}
+          <button type="submit" disabled={loading} className="w-full bg-yellow-400 hover:bg-yellow-500 text-black py-3 rounded text-lg font-semibold transition">
+            {loading ? 'Processing...' : `Book Appointment & Pay $${form.price}`}
+          </button>
+
+          {/* Payment Icons */}
+          <div className="flex justify-center gap-4 mt-6 text-white text-2xl">
+            <i className="fab fa-cc-visa"></i>
+            <i className="fab fa-cc-mastercard"></i>
+            <i className="fab fa-google-pay"></i>
+            <i className="fab fa-paypal"></i>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
