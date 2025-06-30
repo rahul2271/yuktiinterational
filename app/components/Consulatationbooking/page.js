@@ -20,10 +20,10 @@ export default function ConsultationBooking() {
   const [loading, setLoading] = useState(false);
 
   const doctorPrices = {
-    'Dr. Suhas Sakhare': 50,
-    'Dr. Manpreet Singh': 30,
-    'Dr. Sandeep Singh': 30,
-    'Dr. Yashasvi Chandel': 30,
+    'Dr. Suhas Sakhare': 1,
+    'Dr. Manpreet Singh': 1,
+    'Dr. Sandeep Singh': 1,
+    'Dr. Yashasvi Chandel': 1,
   };
 
   useEffect(() => {
