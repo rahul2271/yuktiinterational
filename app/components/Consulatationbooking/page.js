@@ -283,6 +283,7 @@ export default function ConsultationBooking() {
 )}
 
 {step === 2 && (
+  
   <motion.section
     ref={formRef}
     initial={{ opacity: 0, y: 30 }}
@@ -290,12 +291,20 @@ export default function ConsultationBooking() {
     transition={{ delay: 0.3, duration: 0.6, ease: 'easeOut' }}
     className="relative px-4 sm:px-6 lg:px-16 py-10"
   >
+    
     {/* Background Accent Blur */}
     <div className="absolute inset-0 z-0 bg-gradient-to-tr from-white via-blue-50 to-white opacity-80 backdrop-blur-sm rounded-3xl" />
 
     {/* Card Wrapper */}
     <div className="relative z-10 bg-white border border-gray-200 shadow-2xl rounded-3xl px-6 sm:px-10 py-10 sm:py-14 max-w-4xl mx-auto transition-all duration-300">
-      
+       <div className="text-left mb-6">
+      <button
+        onClick={() => setStep(1)}
+        className="inline-flex items-center text-sm text-blue-700 hover:text-blue-900 hover:underline transition"
+      >
+        ← Back to Doctor Selection
+      </button>
+    </div>
       {/* Header with Trust Badges */}
       <div className="text-center mb-10">
         <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 tracking-tight">Your Private Ayurvedic Consultation</h2>
