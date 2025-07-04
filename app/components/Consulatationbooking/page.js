@@ -203,84 +203,85 @@ export default function ConsultationBooking() {
         <motion.span className="ml-2 font-mono text-lg text-red-500 animate-pulse" animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 1.5 }}>{formatCountdown()}</motion.span>
       </div>
 
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        {step === 1 && (
-  <section>
-    <h2 className="text-3xl font-bold text-center mb-3">Choose Your Ayurvedic Doctor</h2>
-    <p className="text-center text-gray-600 mb-10">Hand-picked experts with years of experience in treating complex health issues.</p>
+      <main className="max-w-7xl mx-auto px-6 py-16">
+  {step === 1 && (
+    <section>
+      <h2 className="text-4xl font-extrabold text-center text-[#0a1e3f] mb-4 tracking-tight">Meet Your Ayurvedic Experts</h2>
+      <p className="text-center text-gray-500 text-lg mb-12 max-w-2xl mx-auto">Hand-picked specialists trusted by thousands globally for personalized root-cause healing.</p>
 
-    <div className="grid gap-10 lg:grid-cols-2">
-      {doctors.map((doc, idx) => (
-        <motion.div
-          key={doc.name}
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: idx * 0.1, duration: 0.5 }}
-          whileHover={{ scale: 1.02 }}
-          className="relative bg-gradient-to-br from-[#1e3c72] to-[#2a5298] border border-yellow-100 rounded-3xl shadow-xl hover:shadow-2xl p-6 flex flex-col justify-between transition-all"
-        >
-          {/* Ribbon */}
-          <div className="absolute top-0 right-0 bg-green-500 text-white px-2 py-1 text-xs rounded-bl-xl shadow-md z-10">
-            Trusted Doctor
-          </div>
-
-          {/* Doctor Info */}
-          <div className="flex flex-col md:flex-row items-center gap-5">
-            <img
-              src={doc.photo}
-              alt={doc.name}
-              className="w-[130px] h-[130px] rounded-full object-cover border-4 border-yellow-400 shadow-md"
-            />
-            <div className="text-white">
-              <h3 className="text-xl font-bold">{doc.name}</h3>
-              <p className="text-sm text-yellow-200">{doc.degrees}</p>
-              <p className="text-sm italic text-blue-100">{doc.desc}</p>
-            </div>
-          </div>
-
-          {/* Info Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5 text-sm text-white">
-            <div>
-              <i className="fas fa-briefcase text-yellow-300 mr-1"></i>
-              <strong>Experience:</strong> {doc.experience}
-            </div>
-            <div>
-              <i className="fas fa-clock text-yellow-300 mr-1"></i>
-              <strong>Available:</strong> {doc.availability}
-            </div>
-            <div className="sm:col-span-2 flex items-center gap-2">
-              <i className="fas fa-certificate text-yellow-300 mr-1"></i>
-              <strong>Fee:</strong>
-              <span className="line-through text-red-200 ml-1">${doc.price}</span>
-              <span className="text-green-200 text-xl font-bold ml-2">${doc.discountedPrice}</span>
-              <span className="ml-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">50% OFF</span>
-            </div>
-          </div>
-
-          {/* Expertise Tags */}
-          <div className="flex flex-wrap gap-2 mt-4">
-            {doc.expertise.map((item, idx) => (
-              <span
-                key={idx}
-                className="bg-yellow-100 text-gray-800 px-3 py-1 rounded-full text-xs font-medium shadow-sm"
-              >
-                {item}
-              </span>
-            ))}
-          </div>
-
-          {/* CTA */}
-          <button
-            onClick={() => handleDoctorSelect(doc)}
-            className="mt-6 w-full bg-white hover:bg-yellow-100 text-[#162d50] font-semibold py-3 rounded-xl text-lg transition-all shadow-md"
+      <div className="grid gap-10 lg:grid-cols-2">
+        {doctors.map((doc, idx) => (
+          <motion.div
+            key={doc.name}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.15, duration: 0.6 }}
+            whileHover={{ scale: 1.03 }}
+            className="relative bg-white/20 backdrop-blur-md border border-yellow-200/30 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.18)] p-8 transition-all"
           >
-            Book Now with {doc.name}
-          </button>
-        </motion.div>
-      ))}
-    </div>
-  </section>
-)}
+            <div className="absolute top-0 right-0 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1 text-[11px] font-semibold rounded-bl-xl shadow z-10">
+              Verified & Trusted
+            </div>
+
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              <img
+                src={doc.photo}
+                alt={doc.name}
+                className="w-[120px] h-[120px] rounded-full object-cover border-4 border-yellow-400 shadow-lg"
+              />
+              <div className="text-[#0f172a]">
+                <h3 className="text-2xl font-bold">{doc.name}</h3>
+                <p className="text-sm text-yellow-600 font-medium mt-1">{doc.degrees}</p>
+                <p className="text-sm italic text-gray-500 mt-1">{doc.desc}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 text-gray-800 text-sm">
+              <div className="flex items-center gap-2">
+                <i className="fas fa-briefcase text-yellow-400"></i>
+                <span><strong>Experience:</strong> {doc.experience}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <i className="fas fa-clock text-yellow-400"></i>
+                <span><strong>Available:</strong> {doc.availability}</span>
+              </div>
+              <div className="sm:col-span-2 flex items-center flex-wrap gap-2 mt-2">
+                <i className="fas fa-wallet text-yellow-400"></i>
+                <span className="line-through text-red-400">${doc.price}</span>
+                <span className="text-green-700 font-bold text-lg">${doc.discountedPrice}</span>
+                <span className="bg-red-500 text-white text-[11px] px-2 py-0.5 rounded-full font-semibold">Limited Offer</span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 mt-5">
+              {doc.expertise.map((item, idx) => (
+                <span
+                  key={idx}
+                  className="bg-yellow-50 border border-yellow-200 text-gray-700 px-3 py-1 rounded-full text-xs font-medium shadow-sm"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+
+            <button
+              onClick={() => handleDoctorSelect(doc)}
+              className="mt-8 w-full bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 hover:from-yellow-400 hover:to-yellow-600 text-[#0a1e3f] font-bold py-3 rounded-xl text-lg tracking-wide transition-transform hover:-translate-y-1 shadow-md"
+            >
+              Book Now with {doc.name}
+            </button>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Optional trust strip */}
+      <div className="mt-16 flex justify-center">
+        <img src="/trusted-by.png" alt="As seen in" className="h-8 opacity-70" />
+      </div>
+    </section>
+  )}
+
+
 
 {step === 2 && (
   
