@@ -401,14 +401,14 @@ export default function ConsultationBooking() {
 
       </main>
 
-      <footer className="bg-white text-center text-gray-500 py-6 text-sm border-t mt-12">
-        <div>© 2025 Yukti Herbs. All rights reserved.</div>
-        <div className="mt-2 flex justify-center gap-4 text-xs text-gray-400">
-          <span>Privacy Policy</span>
-          <span>Terms of Service</span>
-          <span>Refund Policy</span>
-        </div>
-      </footer>
+      // <footer className="bg-white text-center text-gray-500 py-6 text-sm border-t mt-12">
+      //   <div>© 2025 Yukti Herbs. All rights reserved.</div>
+      //   <div className="mt-2 flex justify-center gap-4 text-xs text-gray-400">
+      //     <span>Privacy Policy</span>
+      //     <span>Terms of Service</span>
+      //     <span>Refund Policy</span>
+      //   </div>
+      // </footer>
     </div>
   );
 };
