@@ -1,9 +1,10 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Select from 'react-select';
 import countryList from 'react-select-country-list';
 import { DateTime } from 'luxon';
+import Image from 'next/image'; // Added Next.js Image import
 
 // --- Reusable UI Components ---
 
@@ -86,14 +87,14 @@ export default function ConsultationBooking() {
 
   const doctors = [
     { 
-      name: 'Dr. Suhas Sakhare', photo: './drsuhas.png', degrees: 'MD, PhD, DYT', desc: 'Ayurvedic Gastroenterologist', experience: '10+ years', price: 100, discountedPrice: 50, availability: 'Mon-Sat, 11:00 AM - 6:00 PM IST', expertise: ['Ulcerative Colitis', 'Crohn’s Disease', 'IBS'] 
+      // Changed to absolute paths for Next.js Image component
+      name: 'Dr. Suhas Sakhare', photo: '/drsuhas.png', degrees: 'MD, PhD, DYT', desc: 'Ayurvedic Gastroenterologist', experience: '10+ years', price: 100, discountedPrice: 50, availability: 'Mon-Sat, 11:00 AM - 6:00 PM IST', expertise: ['Ulcerative Colitis', 'Crohn’s Disease', 'IBS'] 
     },
     { 
-      name: 'Dr. Manpreet Singh', photo: './2.png', degrees: 'BAMS, MD (Ayurveda)', desc: 'Ayurveda Consultant', experience: '5+ years', price: 60, discountedPrice: 30, availability: 'Mon-Sat, 11:00 AM - 6:00 PM IST', expertise: ['Psoriasis', 'Acne', 'Fatty Liver'] 
+      name: 'Dr. Manpreet Singh', photo: '/2.png', degrees: 'BAMS, MD (Ayurveda)', desc: 'Ayurveda Consultant', experience: '5+ years', price: 60, discountedPrice: 30, availability: 'Mon-Sat, 11:00 AM - 6:00 PM IST', expertise: ['Psoriasis', 'Acne', 'Fatty Liver'] 
     },
   ];
 
-  // Generate Slots matching Doctor Availability (11 AM to 5:45 PM)
   const generateSlots = () => {
     const slots = [];
     for (let h = 11; h < 18; h++) {
@@ -111,7 +112,6 @@ export default function ConsultationBooking() {
     const allCountries = countryList().getData();
     setCountries(allCountries);
     
-    // Auto-detect user timezone and location
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     setForm(prev => ({ ...prev, timeZone: userTimeZone }));
     
@@ -125,7 +125,6 @@ export default function ConsultationBooking() {
       });
   }, []);
 
-  // Fetch Cities when Country changes
   useEffect(() => {
     if (form.country) {
       fetch(`https://countriesnow.space/api/v0.1/countries/cities`, {
@@ -134,11 +133,10 @@ export default function ConsultationBooking() {
       })
         .then(res => res.json())
         .then(data => setCities(data.data || []))
-        .catch(() => setCities([])); // Fallback if API fails
+        .catch(() => setCities([]));
     }
   }, [form.country]);
 
-  // Fetch Booked Slots
   useEffect(() => {
     if (form.preferredDate && form.doctor) {
       fetch(`/api/booked-slots?doctor=${form.doctor}&date=${form.preferredDate}`)
@@ -155,7 +153,6 @@ export default function ConsultationBooking() {
   };
 
   const handlePhoneChange = (e) => {
-    // International Phone Sanitization: Allow only numbers, +, spaces, and dashes for display
     const val = e.target.value.replace(/[^\d+\s-]/g, '');
     setForm({ ...form, phone: val });
   };
@@ -172,11 +169,9 @@ export default function ConsultationBooking() {
       const [year, month, day] = form.preferredDate.split('-').map(Number);
       const [hour, minute] = form.preferredTime.split(':').map(Number);
       
-      // Calculate times based on Luxon
       const localTime = DateTime.fromObject({ year, month, day, hour, minute }, { zone: form.timeZone });
       const indiaTime = localTime.setZone('Asia/Kolkata').toFormat('yyyy-LL-dd HH:mm');
 
-      // Strict phone sanitization for Cashfree API (remove everything except numbers and +)
       const sanitizedPhone = form.phone.replace(/[^\d+]/g, '');
 
       const payload = {
@@ -216,7 +211,6 @@ export default function ConsultationBooking() {
     }
   };
 
-  // Custom styling for React-Select to match Tailwind theme
   const customSelectStyles = {
     control: (base, state) => ({
       ...base,
@@ -246,7 +240,6 @@ export default function ConsultationBooking() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 font-sans selection:bg-blue-200">
-      {/* Sticky Urgency Banner */}
       <div className="sticky top-0 z-50 bg-gradient-to-r from-red-600 to-red-500 text-white py-2.5 text-center text-sm font-semibold tracking-wide shadow-md flex justify-center items-center gap-2">
         <i className="fas fa-bolt text-yellow-300"></i>
         <span>International Priority Offer: <strong className="text-yellow-300">50% OFF</strong> ends in</span>
@@ -258,7 +251,8 @@ export default function ConsultationBooking() {
           <section className="animate-fade-in">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h1 className="text-4xl md:text-5xl font-extrabold text-[#0a1e3f] mb-4 tracking-tight">Select Your Specialist</h1>
-              <p className="text-gray-500 text-lg">Speak 1-on-1 with India's top Ayurvedic experts from the comfort of your home, anywhere in the world.</p>
+              {/* FIXED ERROR: Changed India's to India&apos;s */}
+              <p className="text-gray-500 text-lg">Speak 1-on-1 with India&apos;s top Ayurvedic experts from the comfort of your home, anywhere in the world.</p>
             </div>
 
             <div className="grid gap-8 lg:grid-cols-2 max-w-5xl mx-auto">
@@ -268,13 +262,13 @@ export default function ConsultationBooking() {
                   initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}
                   className="relative bg-white rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 p-8 transition-all group overflow-hidden"
                 >
-                  {/* Decorative Background Blob */}
                   <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-50 rounded-full blur-3xl group-hover:bg-blue-100 transition-all z-0"></div>
 
                   <div className="relative z-10">
                     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
                       <div className="relative">
-                        <img src={doc.photo} alt={doc.name} className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-lg" />
+                        {/* FIXED WARNING: Replaced img with next/image */}
+                        <Image src={doc.photo} alt={doc.name} width={112} height={112} className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-lg" />
                         <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-green-500 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border-2 border-white shadow-sm whitespace-nowrap">
                           Available
                         </div>
@@ -320,7 +314,6 @@ export default function ConsultationBooking() {
             ref={formRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             className="grid lg:grid-cols-12 gap-8 max-w-6xl mx-auto"
           >
-            {/* Left Column: Form */}
             <div className="lg:col-span-8 bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
               <div className="bg-blue-50/50 p-6 border-b border-gray-100 flex items-center justify-between">
                 <button onClick={() => setStep(1)} className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
@@ -330,7 +323,6 @@ export default function ConsultationBooking() {
               </div>
 
               <form onSubmit={handleSubmit} className="p-6 sm:p-10">
-                {/* SECTION 1: Personal Info */}
                 <SectionHeader step="1" title="Patient Details" subtitle="Your information is kept strictly confidential." />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-10">
                   <InputField label="Full Legal Name" placeholder="e.g. John Doe" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required icon={<i className="fas fa-user"></i>} />
@@ -344,7 +336,7 @@ export default function ConsultationBooking() {
                     <Select
                       options={countries}
                       value={countries.find(c => c.label === form.country)}
-                      onChange={(val) => setForm({ ...form, country: val.label, city: '' })} // Reset city on country change
+                      onChange={(val) => setForm({ ...form, country: val.label, city: '' })}
                       styles={customSelectStyles}
                       placeholder="Search for your country..."
                     />
@@ -356,7 +348,6 @@ export default function ConsultationBooking() {
                   )}
                 </div>
 
-                {/* SECTION 2: Medical Context */}
                 <SectionHeader step="2" title="Health Context" subtitle="Help the doctor prepare for your consultation." />
                 <div className="grid grid-cols-1 gap-5 mb-10">
                   <SelectField label="Primary Health Concern" value={form.healthConcern} onChange={(e) => setForm({ ...form, healthConcern: e.target.value })} options={['IBS', 'Ulcerative Colitis', 'Crohn’s Disease', 'Autoimmune Disorders', 'Psoriasis / Skin Issues', 'Fatty Liver', 'Infertility', 'General Wellness', 'Other']} required />
@@ -372,7 +363,6 @@ export default function ConsultationBooking() {
                   </div>
                 </div>
 
-                {/* SECTION 3: Scheduling */}
                 <SectionHeader step="3" title="Select Date & Time" subtitle={`Times are shown in standard Indian Time (IST). Your local timezone is detected as: ${form.timeZone.replace('_', ' ')}`} />
                 <div className="mb-8">
                   <div className="mb-5">
@@ -398,7 +388,6 @@ export default function ConsultationBooking() {
                           const isBooked = bookedSlots.includes(time);
                           const isSelected = form.preferredTime === time;
                           
-                          // Format 24h to 12h for UI
                           const [h, m] = time.split(':');
                           const ampm = h >= 12 ? 'PM' : 'AM';
                           const displayH = h % 12 || 12;
@@ -433,16 +422,21 @@ export default function ConsultationBooking() {
               </form>
             </div>
 
-            {/* Right Column: Sticky Order Summary */}
             <div className="lg:col-span-4 space-y-6">
               <div className="sticky top-16">
                 
-                {/* Summary Card */}
                 <div className="bg-white rounded-3xl shadow-sm border border-gray-200 p-6 mb-6">
                   <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-3">Booking Summary</h3>
                   
                   <div className="flex items-center gap-4 mb-5">
-                    <img src={doctors.find(d => d.name === form.doctor)?.photo} alt="Doctor" className="w-16 h-16 rounded-full object-cover border border-gray-200" />
+                    {/* FIXED WARNING: Replaced img with next/image */}
+                    <Image 
+                      src={doctors.find(d => d.name === form.doctor)?.photo || '/drsuhas.png'} 
+                      alt="Doctor" 
+                      width={64} 
+                      height={64} 
+                      className="w-16 h-16 rounded-full object-cover border border-gray-200" 
+                    />
                     <div>
                       <div className="font-bold text-gray-800">{form.doctor}</div>
                       <div className="text-xs text-gray-500">Video Consultation</div>
@@ -482,7 +476,6 @@ export default function ConsultationBooking() {
                   <div className="text-center text-xs text-gray-400 mt-3">Payments secured by Cashfree PCI-DSS</div>
                 </div>
 
-                {/* Trust Indicators for International Patients */}
                 <div className="bg-[#f8fafc] rounded-2xl border border-blue-100 p-5">
                   <h4 className="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wider">What happens next?</h4>
                   <ul className="space-y-3 text-sm text-gray-600">
