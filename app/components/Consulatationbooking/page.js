@@ -85,8 +85,7 @@ export default function ConsultationBooking() {
   const doctors = [
     { name: 'Dr. Suhas Sakhare', photo: './drsuhas.png', degrees: 'MD, PhD, DYT', desc: 'Ayurvedic Gastroenterologist', experience: '10+ years', price: 100, discountedPrice: 50, availability: 'Mon-Sat, 11:00 AM - 6:00 PM IST', expertise: ['Ulcerative Colitis', 'Crohn’s Disease', 'IBS'] },
     { name: 'Dr. Manpreet Singh', photo: './2.png', degrees: 'BAMS, MD (Ayurveda)', desc: 'Ayurveda Consultant', experience: '5+ years', price: 60, discountedPrice: 30, availability: 'Mon-Sat, 11:00 AM - 6:00 PM IST', expertise: ['Psoriasis', 'Acne', 'Fatty Liver'] },
-    { name: 'Dr. Sandeep Singh', photo: './drsandeep.png', degrees: 'BAMS, MD (Ayurveda)', desc: 'Ayurveda Consultant', experience: '5+ years', price: 60, discountedPrice: 30, availability: 'Mon-Sat, 11:00 AM - 6:00 PM IST', expertise: ['CRD', 'UTI', 'Male & Female Infertility Issues'] },
-    { name: 'Dr. Yashasvi Chandel', photo: './dryash.png', degrees: 'BAMS, MD (Ayurveda)', desc: 'Ayurveda Consultant', experience: '5+ years', price: 60, discountedPrice: 30, availability: 'Mon-Sat, 11:00 AM - 6:00 PM IST', expertise: ['Female Infertility', 'PCOS / PCOD and Hormone imbalance', 'Obesity & Metabolic Health'] },
+    
   ];
 
   const generateSlots = () => {
